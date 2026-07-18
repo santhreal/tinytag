@@ -2216,7 +2216,8 @@ class _Aiff(TinyTag):
                     if duration > 0:
                         self.bitrate = bitrate
                     self.samplerate, self.duration = sr, duration
-                except OverflowError:
+                except (OverflowError, ZeroDivisionError):
+                    # Zero sample rate cannot yield a duration (same soft-fail as overflow).
                     pass
                 self._duration_parsed = True
                 if not self._parse_tags:

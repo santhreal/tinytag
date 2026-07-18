@@ -2135,6 +2135,14 @@ class TestAll(TestCase):
                     TinyTag.get(filename, header_detection=False)
                 self.assertIsInstance(context.exception, TinyTagException)
 
+    def test_aiff_zero_sample_rate_skips_duration(self) -> None:
+        """COMM sample rate 0 must soft-fail duration like OverflowError."""
+        path = os.path.join(SAMPLE_FOLDER, 'zero_sample_rate.aiff')
+        tag = TinyTag.get(path)
+        self.assertIsInstance(tag, _Aiff)
+        self.assertIsNone(tag.duration)
+        self.assertIsNone(tag.samplerate)
+
     def test_show_hint_for_wrong_usage(self) -> None:
         with self.assertRaises(ValueError) as context:
             TinyTag.get()
