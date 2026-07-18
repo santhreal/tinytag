@@ -1741,6 +1741,10 @@ TEST_FILES: dict[str, ExpectedTag] = dict([
         'filesize': 152,
         'duration': 2.0
     }),
+    ('zero_timescale.m4a', {
+        'other': OtherFields(),
+        'filesize': 144,
+    }),
     ('xmp_data.m4a', {
         'other': OtherFields({
             'xmp': [
@@ -2134,6 +2138,13 @@ class TestAll(TestCase):
                 with self.assertRaises(UnsupportedFormatError) as context:
                     TinyTag.get(filename, header_detection=False)
                 self.assertIsInstance(context.exception, TinyTagException)
+
+    def test_mp4_zero_timescale_skips_duration(self) -> None:
+        """mvhd time_scale 0 must skip duration rather than divide by zero."""
+        path = os.path.join(SAMPLE_FOLDER, 'zero_timescale.m4a')
+        tag = TinyTag.get(path)
+        self.assertIsNone(tag.duration)
+        self.assertEqual(tag.filesize, 144)
 
     def test_show_hint_for_wrong_usage(self) -> None:
         with self.assertRaises(ValueError) as context:
