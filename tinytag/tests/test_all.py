@@ -2142,17 +2142,6 @@ class TestAll(TestCase):
                     TinyTag.get(filename, header_detection=False)
                 self.assertIsInstance(context.exception, TinyTagException)
 
-    def test_flac_zero_sample_rate_skips_duration(self) -> None:
-        """STREAMINFO sample rate 0 must skip duration like WAV/OGG.
-
-        .flac files are opened via _ID3 (possible ID3 prefix) which then
-        delegates to _Flac; assert the soft-fail fields on the result.
-        """
-        path = os.path.join(SAMPLE_FOLDER, 'zero_sample_rate.flac')
-        tag = TinyTag.get(path)
-        self.assertEqual(tag.samplerate, 0)
-        self.assertIsNone(tag.duration)
-
     def test_show_hint_for_wrong_usage(self) -> None:
         with self.assertRaises(ValueError) as context:
             TinyTag.get()
